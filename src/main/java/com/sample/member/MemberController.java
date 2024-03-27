@@ -1,7 +1,10 @@
 package com.sample.member;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sample.rest.RestResponse;
@@ -34,8 +38,10 @@ public class MemberController {
 	private final MemberService memberService;
 	
 	@GetMapping("/members")
-	public RestResponse<Member> getMembers(){
-		List<Member> members = memberService.getAllMembers();
+	public RestResponse<Member> getMembers(
+			@RequestParam(name = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate, 
+			@RequestParam(name = "endDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate ){
+		List<Member> members = memberService.getAllMembers(startDate, endDate);
 		return RestResponse.getResponse(members);
 	}
 

@@ -1,6 +1,8 @@
 package com.sample.member;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,7 +54,38 @@ public class MemberService {
 		return memberRepository.save(member);
 	}
 
-	public List<Member> getAllMembers() {
+	public List<Member> getAllMembers(Date startDate, Date endDate) {
+		LocalDateTime start = this.getLocalDateTime(startDate);
+		LocalDateTime end= this.getLocalDateTime(endDate);
+		
+		if(startDate != null && endDate != null) {
+			return memberRepository.findByCreatedDateBetween(start, end);
+		}
+		
+		if(startDate != null) {
+			return memberRepository.findByCreatedDateAfter(start);
+		}
+		
+		if(endDate != null) {
+			return memberRepository.findByCreatedDateBefore(end);
+		}
+		
 		return memberRepository.findAll();
+	}
+	
+	/*
+	 * java.util.Date를 LocalDateTime으로 변환해서 반환한다.
+	 * Date -> Instant -> ZoneDateTime -> LocalDateTime 순으로 변환해서 획득한다.
+	 * Instant : 1970년부터 현재 시간까지를 계산해서 나노초 단위의 값으로 표현하는 객체다.
+	 * ZoneDateTime = ZomeId + Instant <- ZoneId에 해당하는 득점 타임존 지역의 Instant 값을 표현한다. 
+	 */
+	private LocalDateTime getLocalDateTime(Date date) {
+		if(date == null) {
+			return null;
+		}
+		
+		return date.toInstant()							// java.util.Date 객체를 java.time.instant 객체로 변환
+					.atZone(ZoneId.systemDefault())		// 타임존을 시스템의 타임존으로 설정, ZoneDateTime 객체 획득
+					.toLocalDateTime();					// 설정된 타임존에 맞는 LocalDateTime 객체 획득 
 	}
 }

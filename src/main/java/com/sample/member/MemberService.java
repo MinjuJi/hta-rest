@@ -28,4 +28,11 @@ public class MemberService {
 		Member member = request.toEntity();
 		return memberRepository.save(member);
 	}
+	
+	public void removeMember(Long id) {
+		if(!memberRepository.existsById(id)) {
+			throw new RuntimeException("회원정보가 존재하지 않습니다.");
+		}
+		memberRepository.deleteById(id);
+	}
 }

@@ -2,7 +2,6 @@ package com.sample.member;
 
 import java.util.List;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +10,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.sample.rest.RestResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,34 +32,35 @@ import lombok.RequiredArgsConstructor;
 public class MemberController {
 	
 	private final MemberService memberService;
+	
+	@GetMapping("/members")
+	public RestResponse<Member> getMembers(){
+		List<Member> members = memberService.getAllMembers();
+		return RestResponse.getResponse(members);
+	}
 
 	@GetMapping("/members/{id}")
-	public ResponseEntity<Member> getMember(@PathVariable("id") Long id) {
+	public RestResponse<Member> getMember(@PathVariable("id") Long id) {
 		Member member = memberService.getMember(id);
-		return ResponseEntity.ok().body(member);
-	}
-	
-	@DeleteMapping("/members/{id}")
-	public ResponseEntity<Void> deleteMember(@PathVariable("id") Long id){
-		memberService.removeMember(id);
-		return ResponseEntity.ok().build();
+		return RestResponse.getResponse(member);
 	}
 	
 	@PostMapping("/members")
-	public ResponseEntity<Member> createMember(@RequestBody MemberRequest request){
+	public RestResponse<Member> createMember(@RequestBody MemberRequest request){
 		Member member = memberService.createMember(request);
-		return null;
+		return RestResponse.getResponse(member);
 	}
 	
 	@PutMapping("/members/{id}")
-	public ResponseEntity<Member> modifyMember(@PathVariable("id") Long id, @RequestBody MemberRequest request){
+	public RestResponse<Member> modifyMember(@PathVariable("id") Long id, @RequestBody MemberRequest request){
 		Member member = memberService.modifyMember(id, request);
-		return ResponseEntity.ok().body(member);
+		return RestResponse.getResponse(member);
 	}
 	
-	@GetMapping("/members")
-	public ResponseEntity<List<Member>> getMembers(){
-		List<Member> members = memberService.getAllMembers();
-		return ResponseEntity.ok(members);
+	@DeleteMapping("/members/{id}")
+	public RestResponse<Void> deleteMember(@PathVariable("id") Long id){
+		memberService.removeMember(id);
+		return RestResponse.getResponse("[" + id + "] 회원정보를 삭제하였습니다.");
 	}
+	
 }

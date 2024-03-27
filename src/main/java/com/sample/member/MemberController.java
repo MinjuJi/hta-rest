@@ -1,6 +1,5 @@
 package com.sample.member;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -17,6 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sample.rest.RestResponse;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.media.*;
+
 import lombok.RequiredArgsConstructor;
 
 /*
@@ -29,18 +36,68 @@ import lombok.RequiredArgsConstructor;
  * 	- HTTP 응답을 표현하는 객체다.
  * 	- HTTP 상태코드와 HTTP 응답데이터를 한 번에 표현할 수 있는 객체다.
  * 	- T는 ResponseEntity 객체에 담기는 응답데이터의 타입이다.
+ * 
+ * @Tag
+ * 	- REST API 그룹을 설정하는 어노테이션
+ * 	- 해당 컨트롤러 클래스의 요청핸들러 메소드가 제공하는 REST API를 같은 그룹으로 설정한다.
+ * 	- 속성
+ * 		name : REST API 그룹이름을 지정한다.
+ * 			   해당 컨트롤러 클래스가 제공하는 REST API를 대표하는 이름을 지정한다.
+ * 
+ * 		description : REST API 그룹에 대한 간단한 설명을 추가한다.
+ * 
+ * @Operation
+ * 	- REST API 기능에 대한 상세 정보를 설정하는 어노테이션이다.
+ * 	- 요청핸들러 메소드에 추가하는 어노테이션이다.
+ * 	- 속성
+ * 		summary : 해당 요청핸들러 메소드가 제공하는 API에 대한 간단한 설명을 추가한다.
+ * 		description : API에 대한 상세설명을 추가한다.
+ * 
+ * @ApiResponse
+ * 	- REST API의 응답 정보를 설정하는 어노테이션이다.
+ * 	- 요청핸들러 메소드에 HTTP 상태코드 별로 여러 개를 설정할 수 있다.
+ * 	- 속성
+ * 		responseCode : HTTP 상태코드를 지정한다.
+ * 		description : 응답에 대한 설명을 추가한다.
+ * 		content : 응답 컨텐츠에 대한 구체적인 정보를 설정한다.
+ * 				  @Content 어노테이션을 이용해서 medaType, schema 등의 정보를 추가할 수 있다.
+ * 
+ * @ApiResponses
+ * 	- 위에서 설명한 @ApiResponse을 여러 개 포함하는 어노테이션이다.
+ * 	- 요청핸들러 메소드에서 HTTP 상태코드별로 @ApiResponse를 여러 개 정의했을 때 @ApiResponse를 묶기 위한 어노테이션이다.
+ * 
+ * @Parameter
+ * 	- REST API의 파라미터정보를 설정하는 어노테이션
+ * 	- 속성
+ * 		name : 파라미터 이름을 지정한다.
+ * 		description : 파라미터의 설명을 지정한다.
+ * 		required : 필수값 여부를 지정한다.
+ * 
  */
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
+@Tag(name = "회원 API", description = "회원정보 추가, 변경, 삭제, 조회 API를 제공한다.")
 public class MemberController {
 	
 	private final MemberService memberService;
 	
+	@Operation(summary = "전체 회원 조회", description = "전체 회원정보를 조회한다")
+	@ApiResponses({
+		@ApiResponse(responseCode = "200", 
+					description = "조회 성공", 
+					content = {@Content(mediaType = "application/json", 
+					schema = @Schema(implementation = RestResponse.class))})
+	   })
+	@Parameters({
+		@Parameter(name = "startDate", description = "조회 시작일자", required = false, example = "2024-01-01"),
+		@Parameter(name = "endDate", description = "조회 종료일자", required = false, example = "2024-02-01")
+	})
 	@GetMapping("/members")
 	public RestResponse<Member> getMembers(
-			@RequestParam(name = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate, 
+			@RequestParam(name = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
 			@RequestParam(name = "endDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate ){
+		
 		List<Member> members = memberService.getAllMembers(startDate, endDate);
 		return RestResponse.getResponse(members);
 	}

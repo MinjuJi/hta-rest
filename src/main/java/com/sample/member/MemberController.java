@@ -1,5 +1,7 @@
 package com.sample.member;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,5 +54,11 @@ public class MemberController {
 	public ResponseEntity<Member> modifyMember(@PathVariable("id") Long id, @RequestBody MemberRequest request){
 		Member member = memberService.modifyMember(id, request);
 		return ResponseEntity.ok().body(member);
+	}
+	
+	@GetMapping("/members")
+	public ResponseEntity<List<Member>> getMembers(){
+		List<Member> members = memberService.getAllMembers();
+		return ResponseEntity.ok(members);
 	}
 }

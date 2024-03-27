@@ -1,6 +1,7 @@
 package com.sample.member;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
@@ -49,5 +50,9 @@ public class MemberService {
 		member.setUpdatedDate(LocalDateTime.now());
 		
 		return memberRepository.save(member);
+	}
+
+	public List<Member> getAllMembers() {
+		return memberRepository.findAll();
 	}
 }

@@ -20,4 +20,12 @@ public class MemberService {
 		}
 		return optional.get();
 	}
+
+	public Member createMember(MemberRequest request) {
+		if(memberRepository.existsByEmail(request.getEmail())) {
+			throw new RuntimeException("사용할 수 없는 이메일입니다.");
+		}
+		Member member = request.toEntity();
+		return memberRepository.save(member);
+	}
 }

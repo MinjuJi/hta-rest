@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 
 import lombok.Getter;
 
-@Getter
 public class RestResponse<T> {
 	
 	private HttpStatus status;	// 상태
@@ -17,6 +16,16 @@ public class RestResponse<T> {
 		this.status = status;
 		this.message = message;
 		this.items = items;
+	}
+	
+	public String getMessage() {
+		return message;
+	}
+	public List<T> getItems() {
+		return items;
+	}
+	public int getStatus() {
+		return status.value();
 	}
 	
 	public static <T> RestResponse<T> getResponse(HttpStatus status, String message, List<T> items){
